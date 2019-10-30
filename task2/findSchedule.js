@@ -59,10 +59,15 @@ const findSchedule = (minutes, schedules) => {
     let lastHasConflict = null
     while(evalTimeSlot[END] < searchBoundry[END]){
         const collectedResults = formattedSchedules.map(
-            (person,collectedIndex) => checkConflict(evalTimeSlot, person, defaultPointer(lastCollectedResults, collectedIndex))
+            (person,collectedIndex) => checkConflict(
+                evalTimeSlot,
+                person,
+                defaultPointer(lastCollectedResults, collectedIndex))
         );
+
         lastCollectedResults = [...collectedResults]
         const hasConflict = lastHasConflict = collectedResults.find(result => result.status === STATUS_CONFLICT)
+
         if(hasConflict) {
             const nextBestStartTime = reduceNextBestTime(collectedResults)
             evalTimeSlot = [nextBestStartTime, nextBestStartTime+minutes];
