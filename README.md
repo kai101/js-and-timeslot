@@ -1,14 +1,14 @@
 # js-and-timeslot
 
 
-###```npm run task1```
+### ```npm run task1```
 will run all the ```console.assert()```
 
 Basic and standard implemetation.
 
 Additional ```console.assert(add4(0,0) === 0)``` added due to lack of consideration of falsy value in my initial implementation.
 
-###```npm run task2```
+### ```npm run task2```
 will run task2 solution and give the result of the test case given ```['12:15', '1:15']```
 
 Implementation base on 1 pointer per person search to deduce the timing works for everyone.
