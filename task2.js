@@ -23,6 +23,8 @@ const convertToTime = (minute) => {
 }
 const STATUS_AVAILABLE = 'available';
 const STATUS_CONFLICT = 'conflict';
+const START = 0;
+const END = 1;
 
 const checkConflict = (slot, schedules, pointer = 0) => {
     // before thought, return strategy need to return object contain available or conflicted time slot for later all search.
@@ -58,20 +60,31 @@ const checkConflict = (slot, schedules, pointer = 0) => {
 }
 
 const findSchedule = (minutes, schedules) => {
-    // start 09:00
+    
     const formatted = schedules.map(range => range.map(time => time.map(convertToMinutes)));
     const searchBoundry = ['09:00','19:00'].map(convertToMinutes) // establish the search boundry
 
     // divide the search, emulate the first person search before doing all search
     // no crossing of the boundary
     const personASchedule = formatted[0];
-    const start = ['09:00','10:00'].map(convertToMinutes);
-    const result = checkConflict(start, personASchedule);
-    result.timeslot = result.timeslot.map(convertToTime);// temporary convert back for debuging purpose
-    console.log('debug', result)
+    // initial condition
+    let evalTimeSlot = [searchBoundry[START], searchBoundry[START]+minutes];
+    let lastStatus = ''
+    while(evalTimeSlot[END] < searchBoundry[END]){
+        const {status, timeslot} = checkConflict(evalTimeSlot, personASchedule);
+        lastStatus = status;
+        if(status === STATUS_CONFLICT){
+            evalTimeSlot = [timeslot[END], timeslot[END]+minutes];
+        } else if(status === STATUS_AVAILABLE){
+            evalTimeSlot = timeslot
+            break;
+        }
+    }
+    
+    const result = evalTimeSlot.map(convertToTime);// temporary convert back for debuging purpose
 
 
-    return ['11:00', '12:00']; // fake and wrong.
+    return result; // fake and wrong.
 }
 
 // at the end 
