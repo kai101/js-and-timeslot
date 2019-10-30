@@ -1,0 +1,22 @@
+{
+  "name": "js-and-timeslot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kai101/js-and-timeslot.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kai101/js-and-timeslot/issues"
+  },
+  "homepage": "https://github.com/kai101/js-and-timeslot#readme",
+  "dependencies": {
+    "jest": "^24.9.0"
+  }
+}
