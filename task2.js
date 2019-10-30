@@ -9,23 +9,67 @@ let schedules = [
 
 // utils function
 const pad = (number, size) => {
-    var result = "000000000" + number;
-    return result.substr(s.length-size);
+    let result = "000000000" + number;
+    return result.substr(result.length-size);
 }
 const convertToMinutes = (time) => {
     const [hour,minute] = time.split(':').map(element => parseInt(element, 10));
     return (hour * 60) + minute;
 }
 const convertToTime = (minute) => {
-    const hour = pad(minute/60, 2);
+    const hour = pad(Math.floor(minute/60), 2);
     const minuteResult = pad(minute%60, 2);
     return `${hour}:${minuteResult}`
+}
+const STATUS_AVAILABLE = 'available';
+const STATUS_CONFLICT = 'conflict';
+
+const checkConflict = (slot, schedules, pointer = 0) => {
+    // before thought, return strategy need to return object contain available or conflicted time slot for later all search.
+    // {
+    //     status: 'available' // or 'conflict'
+    //     timeslot:['09:00', '10:00'] // if available return the available timeslot, if schedule conflict return the conflict slot to find the next starting point.
+    // }
+
+    //  might need not to search, high chance we need to put a search pointer on every person.
+    const [slotStart, slotEnd] = slot;
+    let preSlot = schedules[pointer];
+    for(let i = pointer; i < schedules.length; i++){
+        const [curStart, curEnd] = schedules[i]
+        if((slotStart >= curStart && slotStart < curEnd) || (slotEnd > curStart && slotEnd <= curEnd)) {
+            return {
+                status: STATUS_CONFLICT,
+                timeslot: [curStart, curEnd]
+            }
+        } else if(curStart >= slotEnd) {
+            // can stop evaluating when loop till meeting later than the evaluation.
+            return {
+                status: STATUS_AVAILABLE,
+                timeslot: slot
+            }
+        }
+    }
+
+    // if no conflict and finish evaluating the user meeting, then it is available.
+    return {
+        status: STATUS_AVAILABLE,
+        timeslot: slot
+    }
 }
 
 const findSchedule = (minutes, schedules) => {
     // start 09:00
     const formatted = schedules.map(range => range.map(time => time.map(convertToMinutes)));
-    const searchBoundry = ['09:00','19:00'].map(convertToMinutes) // establish the boundry
+    const searchBoundry = ['09:00','19:00'].map(convertToMinutes) // establish the search boundry
+
+    // divide the search, emulate the first person search before doing all search
+    // no crossing of the boundary
+    const personASchedule = formatted[0];
+    const start = ['09:00','10:00'].map(convertToMinutes);
+    const result = checkConflict(start, personASchedule);
+    result.timeslot = result.timeslot.map(convertToTime);// temporary convert back for debuging purpose
+    console.log('debug', result)
+
 
     return ['11:00', '12:00']; // fake and wrong.
 }

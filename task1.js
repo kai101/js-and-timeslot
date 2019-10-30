@@ -10,7 +10,6 @@ function defaultArguments(callForward, options) {
         return callForward.call(null, inputA, inputB);
     }
     return innerFunction;
-    
 }
 
 
