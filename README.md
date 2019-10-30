@@ -4,16 +4,16 @@
 ### ```npm run task1```
 will run all the ```console.assert()```
 
-Basic and standard implemetation.
+Basic and standard implementation.
 
 Additional ```console.assert(add4(0,0) === 0)``` added due to lack of consideration of falsy value in my initial implementation.
 
 ### ```npm run task2```
 will run task2 solution and give the result of the test case given ```['12:15', '1:15']```
 
-Implementation base on 1 pointer per person search to deduce the timing works for everyone.
+Implementation base on 1 pointer per person search to deduce the timing that works for everyone.
 
-Achieved pretty good performance that avoid many of the waste check.
+Achieved pretty good performance that avoid many of the waste loop.
 
 
 ### Potential solution for task 2
