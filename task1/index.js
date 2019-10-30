@@ -2,17 +2,15 @@ function add(a, b) {
     return a + b;
 };
 
-// it is a callback but it feels like calling forward to me
+// this is defaultArguments tailor for numeric operation.
 function defaultArguments(callForward, options) {
     const innerFunction = function(a,b){
-        inputA = a || options.a || undefined;
-        inputB = b || options.b || undefined;
+        let inputA = a || options.a || a;
+        let inputB = b || options.b || b;
         return callForward.call(null, inputA, inputB);
     }
     return innerFunction;
 }
-
-
 
 const add2 = defaultArguments(add, { b: 9 });
 console.assert(add2(10) === 19);
@@ -25,3 +23,6 @@ console.assert(add3(undefined, 10) === 12);
 const add4 = defaultArguments(add, { c: 3 }); // doesn't do anything, since c isn't
 console.assert(isNaN(add4(10)));
 console.assert(add4(10, 10) === 20);
+
+// // Extra test case for falsy value that will break my previous implementation
+console.assert(add4(0, 0) === 0);
