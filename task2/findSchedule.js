@@ -11,7 +11,6 @@ import {
 } from './constants.js';
 
 const checkConflict = (slot, schedules, pointer = 0) => {
-    console.log('slot, schedules, pointer', slot, schedules, pointer)
     const [slotStart, slotEnd] = slot;
     let i = pointer;
     for(; i < schedules.length; i++){
@@ -40,6 +39,18 @@ const checkConflict = (slot, schedules, pointer = 0) => {
     }
 }
 
+const defaultPointer = (lastCollectedResults, collectedIndex) => {
+    return lastCollectedResults[collectedIndex] ? lastCollectedResults[collectedIndex].pointer : 0;
+}
+
+const reduceNextBestTime = (resultCollection) => resultCollection.reduce((acc, cur)=> {
+    if(cur.status === STATUS_CONFLICT){
+        return acc < cur.timeslot[END] ? cur.timeslot[END] : acc; 
+    } else {
+        return acc
+    }
+},0);
+
 const findSchedule = (minutes, schedules) => {
     const formattedSchedules = schedules.map(range => range.map(time => time.map(convertToMinutes)));
     const searchBoundry = ['09:00','19:00'].map(convertToMinutes) // establish the search boundry
@@ -48,19 +59,12 @@ const findSchedule = (minutes, schedules) => {
     let lastHasConflict = null
     while(evalTimeSlot[END] < searchBoundry[END]){
         const collectedResults = formattedSchedules.map(
-            (person,collectedIndex) => checkConflict(evalTimeSlot, person, lastCollectedResults[collectedIndex] ? lastCollectedResults[collectedIndex].pointer : 0)
+            (person,collectedIndex) => checkConflict(evalTimeSlot, person, defaultPointer(lastCollectedResults, collectedIndex))
         );
         lastCollectedResults = [...collectedResults]
         const hasConflict = lastHasConflict = collectedResults.find(result => result.status === STATUS_CONFLICT)
         if(hasConflict) {
-            const nextBestStartTime = collectedResults.reduce((acc, cur)=> {
-                if(cur.status === STATUS_CONFLICT){
-                    return acc < cur.timeslot[END] ? cur.timeslot[END] : acc; 
-                } else {
-                    return acc
-                }
-            },0);
-
+            const nextBestStartTime = reduceNextBestTime(collectedResults)
             evalTimeSlot = [nextBestStartTime, nextBestStartTime+minutes];
         } else {
             break;
