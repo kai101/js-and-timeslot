@@ -1,0 +1,31 @@
+{
+  "name": "js-and-timeslot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "task1": "node ./task1/index.js",
+    "task2": "node --experimental-modules ./task2/index.js",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kai101/js-and-timeslot.git"
+  },
+  "engines": {
+    "node": ">=12.0"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kai101/js-and-timeslot/issues"
+  },
+  "homepage": "https://github.com/kai101/js-and-timeslot#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "@babel/preset-env": "^7.6.3",
+    "babel-jest": "^24.9.0",
+    "jest": "^24.9.0"
+  }
+}
