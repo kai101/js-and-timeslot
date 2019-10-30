@@ -16,7 +16,7 @@ Implementation base on 1 pointer per person search to deduce the timing works fo
 Achieved pretty good performance that avoid many of the waste check.
 
 
-### Potential solution
+### Potential solution for task 2
 Other potential solution that I can think of at this moment is converging everyone schedule into one, and then search for a empty time slot.
 
 While the search will be fast, the converging part will be slow.
