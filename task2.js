@@ -36,18 +36,21 @@ const checkConflict = (slot, schedules, pointer = 0) => {
     //  might need not to search, high chance we need to put a search pointer on every person.
     const [slotStart, slotEnd] = slot;
     let preSlot = schedules[pointer];
-    for(let i = pointer; i < schedules.length; i++){
+    let i = pointer;
+    for(; i < schedules.length; i++){
         const [curStart, curEnd] = schedules[i]
         if((slotStart >= curStart && slotStart < curEnd) || (slotEnd > curStart && slotEnd <= curEnd)) {
             return {
                 status: STATUS_CONFLICT,
-                timeslot: [curStart, curEnd]
+                timeslot: schedules[i],
+                pointer: i
             }
         } else if(curStart >= slotEnd) {
             // can stop evaluating when loop till meeting later than the evaluation.
             return {
                 status: STATUS_AVAILABLE,
-                timeslot: slot
+                timeslot: slot,
+                pointer: i
             }
         }
     }
@@ -55,32 +58,40 @@ const checkConflict = (slot, schedules, pointer = 0) => {
     // if no conflict and finish evaluating the user meeting, then it is available.
     return {
         status: STATUS_AVAILABLE,
-        timeslot: slot
+        timeslot: slot,
+        pointer: i
     }
 }
 
 const findSchedule = (minutes, schedules) => {
-    
-    const formatted = schedules.map(range => range.map(time => time.map(convertToMinutes)));
+    const formattedSchedules = schedules.map(range => range.map(time => time.map(convertToMinutes)));
     const searchBoundry = ['09:00','19:00'].map(convertToMinutes) // establish the search boundry
-
-    // divide the search, emulate the first person search before doing all search
-    // no crossing of the boundary
-    const personASchedule = formatted[0];
-    // initial condition
     let evalTimeSlot = [searchBoundry[START], searchBoundry[START]+minutes];
-    let lastStatus = ''
+    let lastCollectedResults = []
+    let lastHasConflict = null
     while(evalTimeSlot[END] < searchBoundry[END]){
-        const {status, timeslot} = checkConflict(evalTimeSlot, personASchedule);
-        lastStatus = status;
-        if(status === STATUS_CONFLICT){
-            evalTimeSlot = [timeslot[END], timeslot[END]+minutes];
-        } else if(status === STATUS_AVAILABLE){
-            evalTimeSlot = timeslot
+        const collectedResults = formattedSchedules.map(
+            (person,collectedIndex) => checkConflict(evalTimeSlot, person, lastCollectedResults[collectedIndex] || 0)
+        );
+        const hasConflict = lastHasConflict = collectedResults.find(result => result.status === STATUS_CONFLICT)
+        if(hasConflict) {
+            const nextBestStartTime = collectedResults.reduce((acc, cur)=> {
+                if(cur.status === STATUS_CONFLICT){
+                    return acc < cur.timeslot[END] ? cur.timeslot[END] : acc; 
+                } else {
+                    return acc
+                }
+                    
+            },0);
+            evalTimeSlot = [nextBestStartTime, nextBestStartTime+minutes];
+        } else {
             break;
         }
     }
     
+    if(lastHasConflict){
+        throw new Error('No Suitable time slot.');
+    }
     const result = evalTimeSlot.map(convertToTime);// temporary convert back for debuging purpose
 
 
